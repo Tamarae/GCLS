@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ხელსაწყოები · GCLC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/site.css"/>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">GCLC</a>
+    <ul class="site-nav-items">
+      <li><a href="index.html"     class="site-nav-item">მთავარი</a></li>
+      <li><a href="research.html"  class="site-nav-item">კვლევა</a></li>
+      <li><a href="team.html"      class="site-nav-item">გუნდი</a></li>
+      <li><a href="ANA40027a.html" class="site-nav-item">კორპუსი</a></li>
+      <li><a href="tools.html"     class="site-nav-item active">ხელსაწყოები</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page">
+
+  <header class="page-head">
+    <div class="page-eyebrow">ხელსაწყოები · Tools</div>
+    <h1 class="page-title">ხელსაწყოები</h1>
+    <div class="page-title-en">Tools</div>
+    <p class="page-lead">რაოდენობრივი ანალიზის ხელსაწყოები მორფოლოგიური სირთულის, პარადიგმის ზომისა და ლექსიკური პროდუქტიულობის გასაზომად ბავშვის და ბავშვისადმი მიმართულ მეტყველებაში.</p>
+    <p class="page-lead-en">Quantitative analyzers for corpus-level measurement of morphological complexity, paradigm size, and lexical productivity in child and child-directed Georgian.</p>
+  </header>
+
+  <section class="section">
+    <div class="section-title">გაშვებული ხელსაწყოები / Available tools</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-eyebrow">analyzer</div>
+        <h3 class="card-title">MLU / MLV / MSP calculator</h3>
+        <div class="card-body">
+          Computes mean length of utterance, mean length of verb (morphemes per verb token),
+          and mean size of paradigm (distinct forms per lemma) from an annotated session.
+          Lemma-based TTR and hapax-derived Baayen <em>P</em> are reported in the same view.
+        </div>
+        <span class="card-link" style="opacity: 0.5; pointer-events: none;">to be embedded →</span>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">browser</div>
+        <h3 class="card-title">Paradigm browser</h3>
+        <div class="card-body">
+          Click a lemma to see all attested inflected forms with frequencies. Useful for
+          inspecting paradigm density per dyad and stage.
+        </div>
+        <span class="card-link" style="opacity: 0.5; pointer-events: none;">to be embedded →</span>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">algorithm</div>
+        <h3 class="card-title">Variation set detector</h3>
+        <div class="card-body">
+          Locates morphological variation sets in CDS — sequences within a ≤3-utterance window
+          sharing a lemma and screeve series but differing in exactly one slot value.
+        </div>
+        <span class="card-link" style="opacity: 0.5; pointer-events: none;">to be embedded →</span>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">utility</div>
+        <h3 class="card-title">GRA consistency check</h3>
+        <div class="card-body">
+          Cross-validates Leipzig glosses against the lexicon and flags mismatches across the 24
+          per-session xlsx files. Used during corpus refinement.
+        </div>
+        <span class="card-link" style="opacity: 0.5; pointer-events: none;">to be embedded →</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">სტატუსი / Status</div>
+    <div class="placeholder">
+      <div class="placeholder-eyebrow">integration in progress</div>
+      <div class="placeholder-title">Live tools to be embedded</div>
+      <p class="placeholder-body">
+        The standalone analyzer (HTML + JavaScript) and other instruments will be embedded here as
+        in-page widgets. Each tool will accept a session JSON (or upload a fresh xlsx) and produce
+        a citable result inline.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-meta">
+    <span>GCLC · Ilia State University · Tbilisi</span>
+    <span class="sep">·</span>
+    <span>CHAT / CHILDES compatible</span>
+  </div>
+  <div class="site-footer-logos">
+    <a href="https://iliauni.edu.ge" target="_blank" rel="noopener" class="site-footer-logo" title="Ilia State University">
+      <img src="assets/Iliaunilogo.png" alt="Ilia State University"/>
+    </a>
+    <a href="https://rustaveli.org.ge" target="_blank" rel="noopener" class="site-footer-logo" title="Shota Rustaveli National Science Foundation of Georgia">
+      <img src="assets/GE_Shota_web.jpg" alt="SRNSFG"/>
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>
