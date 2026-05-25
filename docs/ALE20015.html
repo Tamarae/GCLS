@@ -128,7 +128,9 @@
   @media (max-width: 900px) {
     .shell { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px 48px; }
     .file-nav { position: static; border-right: none; border-bottom: 1px solid var(--line); padding-right: 0; margin-right: 0; padding-bottom: 18px; }
-    .file-list { flex-direction: row; flex-wrap: wrap; gap: 0 4px; }
+    .file-list { flex-direction: row; flex-wrap: wrap; gap: 4px 6px; }
+    .file-item { width: auto; padding: 4px 8px; border-left: none; border: 1px solid var(--line); margin-left: 0; }
+    .file-item.active { border-color: var(--ink); background: var(--paper-2); }
   }
 
   /* —— masthead —— */
@@ -244,15 +246,15 @@
     display: flex; flex-direction: column; gap: 4px;
   }
   .stat-num {
-    font-family: var(--font-sans);
-    font-size: 26px;
+    font-family: var(--font-serif);
+    font-size: 28px;
     font-weight: 500;
     color: var(--ink);
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: lining-nums tabular-nums;
     line-height: 1;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
   }
-  .stat-num .unit { font-size: 12px; color: var(--ink-3); margin-left: 4px; font-weight: 400; }
+  .stat-num .unit { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--ink-3); margin-left: 4px; font-weight: 400; }
   .stat-label {
     font-size: 10px; color: var(--ink-4);
     font-family: var(--font-mono);
@@ -328,30 +330,44 @@
   .chip.active.chip-chi .chip-dot { background: var(--chi); border-color: var(--chi); }
   .chip.active.chip-mot .chip-dot { background: var(--mot); border-color: var(--ink-3); }
 
-  .toggle-group { display: flex; gap: 14px; margin-left: auto; align-items: center; }
-  .toggle {
+  /* —— view-mode segmented control (replaces single mono toggle) —— */
+  .view-group {
+    display: flex; align-items: center; gap: 14px;
+    margin-left: auto;
+  }
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--line-2);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .seg-btn {
     background: none;
     border: none;
-    padding: 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink-4);
     cursor: pointer;
-    letter-spacing: 0.06em;
-    display: flex; align-items: center; gap: 8px;
-    user-select: none;
-    text-transform: uppercase;
+    padding: 6px 12px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.01em;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: background .12s, color .12s;
+    border-right: 1px solid var(--line-2);
   }
-  .toggle:hover { color: var(--ink); }
-  .toggle.on {
-    color: var(--ink);
+  .seg-btn:last-child { border-right: none; }
+  .seg-btn:hover { color: var(--ink); }
+  .seg-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 500;
   }
-  .toggle .dot {
-    width: 9px; height: 9px;
-    border: 1px solid var(--ink-4);
-    background: transparent;
+  .seg-btn .glyph {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    opacity: 0.75;
   }
-  .toggle.on .dot { background: var(--ink); border-color: var(--ink); }
+  .seg-btn.active .glyph { opacity: 1; }
 
   /* —— transcript (Leipzig-style interlinear glosses) —— */
   .transcript {
@@ -367,6 +383,9 @@
     align-items: flex-start;
   }
   .utt:last-child { border-bottom: none; }
+  /* CHI utterances get a 2px ink rule to set the rhythm of dyadic exchange */
+  .utt.chi { box-shadow: inset 2px 0 0 var(--ink); background-color: aliceblue; padding-left: 16px; margin-left: -16px; }
+  .utt.mot { box-shadow: inset 1px 0 0 var(--line-2); padding-left: 16px; margin-left: -16px; }
 
   .ex-num {
     font-family: var(--font-sans);
@@ -705,26 +724,45 @@
     z-index: 50;
     /* keep the existing internal section borders working */
   }
-  /* compressed bar — hidden in expanded state */
-  .compressed-bar {
-    display: none;
+  /* compressed bar baseline styling lives below in the transition block */
+  /* expanded blocks fade in/out — calmer than display:none flicker */
+  .sticky-head .masthead,
+  .sticky-head .meta-row,
+  .sticky-head .stats {
+    transition: opacity .14s ease-out, max-height .18s ease-out;
+    overflow: hidden;
   }
-  /* scrolled state: collapse masthead / meta / stats; reveal compressed bar */
   .sticky-head.scrolled .masthead,
   .sticky-head.scrolled .meta-row,
   .sticky-head.scrolled .stats {
-    display: none;
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom-color: transparent;
+    pointer-events: none;
   }
-  .sticky-head.scrolled .compressed-bar {
-    display: flex;
+  .sticky-head.scrolled .masthead { margin-bottom: 0; }
+  .compressed-bar {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity .14s ease-out, max-height .18s ease-out;
     align-items: center;
     gap: 14px;
-    padding: 12px 0 13px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid transparent;
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--ink-3);
     letter-spacing: 0.06em;
+    display: flex;
+    padding: 0;
+  }
+  .sticky-head.scrolled .compressed-bar {
+    opacity: 1;
+    max-height: 60px;
+    padding: 12px 0 13px;
+    border-bottom-color: var(--line);
   }
   .compressed-bar .cb-id {
     color: var(--ink);
@@ -810,20 +848,19 @@
   .footer-meta .footer-sep { color: var(--ink-5); }
   .footer-logos { display: flex; gap: 26px; align-items: center; }
   .footer-logo {
-    display: inline-block;
-    line-height: 0;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-4);
+    letter-spacing: 0.06em;
+    border: 1px dashed var(--line-2);
+    padding: 8px 12px;
+    text-decoration: none;
+    transition: color .15s, border-color .15s;
   }
-  .footer-logo img {
-    height: 38px;
-    width: auto;
-    opacity: 0.72;
-    filter: grayscale(1);
-    transition: opacity .15s, filter .15s;
-  }
-  .footer-logo:hover img {
-    opacity: 1;
-    filter: grayscale(0);
-  }
+  .footer-logo:hover { color: var(--ink); border-color: var(--ink-3); }
 
   /* small */
   @media (max-width: 880px) {
@@ -1123,7 +1160,7 @@ function UttCite({fileId, file, u}) {
 
 function TranscriptView({fileId, file}) {
   const [spk, setSpk] = useState("ALL");
-  const [showGloss, setShowGloss] = useState(false);   // single toggle now — drives GRA + POS
+  const [showGloss, setShowGloss] = useState(true);   // default ON — the gloss is the corpus
 
   const filt = transcript.filter(u => spk==="ALL" || u.who===spk);
   const annotating = showGloss;
@@ -1143,10 +1180,22 @@ function TranscriptView({fileId, file}) {
             მზრუნველი · Caregiver
           </button>
         </div>
-        <div className="toggle-group">
-          <button className={"toggle" + (showGloss ? " on" : "")} onClick={()=>setShowGloss(!showGloss)}>
-            <span className="dot"></span>გლოსირება
-          </button>
+        <div className="view-group">
+          <span className="toolbar-label">ხედი / view</span>
+          <div className="seg" role="group" aria-label="ხედი">
+            <button
+              type="button"
+              className={"seg-btn" + (!showGloss ? " active" : "")}
+              onClick={()=>setShowGloss(false)}
+              title="მხოლოდ გამონათქვამი"
+            >გამონათქვამი</button>
+            <button
+              type="button"
+              className={"seg-btn" + (showGloss ? " active" : "")}
+              onClick={()=>setShowGloss(true)}
+              title="გამონათქვამი + მორფოლოგიური გლოსირება"
+            >+ გლოსირება</button>
+          </div>
         </div>
       </div>
 
@@ -1176,10 +1225,10 @@ function TranscriptView({fileId, file}) {
                     );
                   })}
                 </div>
-                {u.translation_en && (
+                {showGloss && u.translation_en && (
                   <div className="free-trans">{u.translation_en}</div>
                 )}
-                {u.notes && (
+                {showGloss && u.notes && (
                   <div className="utt-notes">{u.notes}</div>
                 )}
               </div>
@@ -1424,12 +1473,8 @@ function App() {
             <span>CHAT / CHILDES compatible</span>
           </div>
           <div className="footer-logos">
-            <a href="https://iliauni.edu.ge" target="_blank" rel="noopener" className="footer-logo" title="Ilia State University">
-              <img src="assets/Iliaunilogo.png" alt="Ilia State University"/>
-            </a>
-            <a href="https://rustaveli.org.ge" target="_blank" rel="noopener" className="footer-logo" title="Shota Rustaveli National Science Foundation of Georgia">
-              <img src="assets/GE_Shota_web.jpg" alt="SRNSFG"/>
-            </a>
+            <a href="https://iliauni.edu.ge" target="_blank" rel="noopener" className="footer-logo" title="Ilia State University">[ Iliauni ]</a>
+            <a href="https://rustaveli.org.ge" target="_blank" rel="noopener" className="footer-logo" title="Shota Rustaveli National Science Foundation of Georgia">[ SRNSFG ]</a>
           </div>
         </footer>
         <BackToTop visible={scrolled}/>
