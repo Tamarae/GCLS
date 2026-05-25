@@ -862,6 +862,17 @@
   }
   .footer-logo:hover { color: var(--ink); border-color: var(--ink-3); }
 
+  .footer-logo img {
+    height: 38px;
+    width: auto;
+    opacity: 0.72;
+    filter: grayscale(1);
+    transition: opacity .15s, filter .15s;
+  }
+  .footer-logo:hover img {
+    opacity: 1;
+    filter: grayscale(0);
+  }
   /* small */
   @media (max-width: 880px) {
     .freq-grid { grid-template-columns: 1fr; }
@@ -1473,8 +1484,12 @@ function App() {
             <span>CHAT / CHILDES compatible</span>
           </div>
           <div className="footer-logos">
-            <a href="https://iliauni.edu.ge" target="_blank" rel="noopener" className="footer-logo" title="Ilia State University">[ Iliauni ]</a>
-            <a href="https://rustaveli.org.ge" target="_blank" rel="noopener" className="footer-logo" title="Shota Rustaveli National Science Foundation of Georgia">[ SRNSFG ]</a>
+            <a href="https://iliauni.edu.ge" target="_blank" rel="noopener" className="footer-logo" title="Ilia State University">
+              <img src="assets/Iliaunilogo.png" alt="Ilia State University"/>
+            </a>
+            <a href="https://rustaveli.org.ge" target="_blank" rel="noopener" className="footer-logo" title="Shota Rustaveli National Science Foundation of Georgia">
+              <img src="assets/GE_Shota_web.jpg" alt="SRNSFG"/>
+            </a>
           </div>
         </footer>
         <BackToTop visible={scrolled}/>
