@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ძიება · GCLS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/site.css"/>
+<style>
+/* ── search-page specific ───────────────────────── */
+.search-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+.search-head {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--line);
+}
+.search-input-wrap {
+  display: flex;
+  gap: 0;
+  margin-top: 28px;
+  border: 1px solid var(--line);
+}
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  padding: 16px 20px;
+  color: var(--ink);
+  min-width: 0;
+}
+.search-input::placeholder { color: var(--ink-5); }
+.search-btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  cursor: pointer;
+  padding: 16px 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background .12s;
+  white-space: nowrap;
+}
+.search-btn:hover { background: var(--ink-2); }
+
+/* filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-2);
+  align-items: center;
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.filter-select {
+  background: var(--paper);
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238e8e88'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 26px;
+}
+.filter-select:focus { outline: 1px solid var(--ink-3); }
+
+/* status bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-4);
+  min-height: 40px;
+}
+.status-count { color: var(--ink); font-weight: 500; }
+.status-msg { color: var(--ink-4); }
+.loading-bar {
+  width: 100%;
+  height: 2px;
+  background: var(--line-2);
+  position: relative;
+  overflow: hidden;
+}
+.loading-bar-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: var(--ink);
+  animation: loading-slide 1.2s ease-in-out infinite;
+}
+@keyframes loading-slide {
+  0% { left: -40%; width: 40%; }
+  100% { left: 100%; width: 40%; }
+}
+
+/* results */
+.results {
+  margin-top: 0;
+}
+.result-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0 28px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line-2);
+  align-items: start;
+}
+.result-row:last-child { border-bottom: none; }
+.result-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 2px;
+}
+.result-session {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+}
+.result-session a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--ink-5);
+}
+.result-session a:hover { border-bottom-color: var(--ink); }
+.result-who {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.result-who.chi { color: var(--ink-2); }
+.result-age {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-5);
+}
+.result-body {}
+.kwic {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.kwic mark {
+  background: none;
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 1px;
+}
+.result-gra {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+.result-lemma {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--ink-4);
+}
+.result-lemma .pos-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--line-2);
+  padding: 1px 5px;
+  color: var(--ink-4);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.result-screeve {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-4);
+  letter-spacing: 0.06em;
+}
+.result-trans {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-4);
+  margin-top: 5px;
+}
+.result-trans::before { content: '\2018'; }
+.result-trans::after  { content: '\2019'; }
+
+.empty-state {
+  padding: 56px 0;
+  text-align: center;
+  color: var(--ink-4);
+}
+.empty-state-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  margin-bottom: 8px;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+.empty-state-sub {
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+/* pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 0 48px;
+}
+.page-btn {
+  background: none;
+  border: 1px solid var(--line-2);
+  cursor: pointer;
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  transition: color .12s, border-color .12s;
+}
+.page-btn:hover, .page-btn.active {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.page-btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+@media (max-width: 880px) {
+  .search-shell { padding: 0 18px; }
+  .result-row { grid-template-columns: 1fr; gap: 8px; }
+  .result-meta { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .filter-bar { gap: 8px 12px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="index.html" class="site-brand">GCLS</a>
+    <ul class="site-nav-items">
+      <li><a href="index.html"    class="site-nav-item">მთავარი</a></li>
+      <li><a href="research.html" class="site-nav-item">კვლევა</a></li>
+      <li><a href="team.html"     class="site-nav-item">გუნდი</a></li>
+      <li><a href="ANA40027a.html"class="site-nav-item">კორპუსი</a></li>
+      <li><a href="tools.html"    class="site-nav-item">ხელსაწყოები</a></li>
+      <li><a href="search.html"   class="site-nav-item active">ძიება</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="search-shell">
+
+  <header class="search-head">
+    <div class="page-eyebrow">კორპუსის ძიება · Corpus Search</div>
+    <h1 class="page-title" style="font-size:36px">ძიება</h1>
+    <div class="page-title-en">Search</div>
+    <div class="search-input-wrap">
+      <input
+        id="q"
+        class="search-input"
+        type="search"
+        placeholder="სიტყვა, ლემა, ან GRA ··· word, lemma, or gloss"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+      <button class="search-btn" onclick="doSearch()">ძიება</button>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">მოსაუბრე</span>
+      <select id="f-who" class="filter-select" onchange="doSearch()">
+        <option value="">ყველა</option>
+        <option value="CHI">CHI · ბავშვი</option>
+        <option value="MOT">მზრუნველი</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">ბავშვი</span>
+      <select id="f-speaker" class="filter-select" onchange="doSearch()">
+        <option value="">ყველა</option>
+        <option value="ALE">ალექსი</option>
+        <option value="ANA">ანა</option>
+        <option value="GAB">გაბრიელი</option>
+        <option value="MAT">მათე</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">POS</span>
+      <select id="f-pos" class="filter-select" onchange="doSearch()">
+        <option value="">ყველა</option>
+        <option value="VERB">VERB</option>
+        <option value="VERB_PE">VERB_PE</option>
+        <option value="NOUN">NOUN</option>
+        <option value="PRON">PRON</option>
+        <option value="ADJ">ADJ</option>
+        <option value="ADV">ADV</option>
+        <option value="CONJ">CONJ</option>
+        <option value="PART">PART</option>
+        <option value="NUM">NUM</option>
+        <option value="PROPN">PROPN</option>
+        <option value="VNOUN">VNOUN</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Screeve</span>
+      <select id="f-screeve" class="filter-select" onchange="doSearch()">
+        <option value="">ყველა</option>
+        <option>Present Indicative</option>
+        <option>Future Indicative</option>
+        <option>Aorist Indicative</option>
+        <option>Imperative</option>
+        <option>Optative</option>
+        <option>Modal</option>
+        <option>Imperfect</option>
+        <option>Perfect</option>
+        <option>Pluperfect</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Series</span>
+      <select id="f-series" class="filter-select" onchange="doSearch()">
+        <option value="">ყველა</option>
+        <option>Series I</option>
+        <option>Series II</option>
+        <option>Series III</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="status-bar" class="status-bar">
+    <span id="status-msg" class="status-msg">კორპუსი იტვირთება…</span>
+  </div>
+  <div id="loading-bar" class="loading-bar" style="display:none"><div class="loading-bar-fill"></div></div>
+
+  <div id="results" class="results"></div>
+
+  <div id="pagination" class="pagination"></div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-meta">
+    <span>GCLS · Ilia State University · Tbilisi</span>
+    <span class="sep">·</span>
+    <span>CHAT / CHILDES compatible</span>
+  </div>
+  <div class="site-footer-logos">
+    <a href="https://iliauni.edu.ge" target="_blank" rel="noopener" class="site-footer-logo" title="Ilia State University">
+      <img src="assets/Iliaunilogo.png" alt="Ilia State University"/>
+    </a>
+    <a href="https://rustaveli.org.ge" target="_blank" rel="noopener" class="site-footer-logo" title="Shota Rustaveli National Science Foundation of Georgia">
+      <img src="assets/GE_Shota_web.jpg" alt="SRNSFG"/>
+    </a>
+  </div>
+</footer>
+
+<script>
+const PAGE_SIZE = 50;
+let INDEX = null;         // full token array after load
+let filtered = [];        // current result set
+let page = 0;
+
+// ── load ──────────────────────────────────────────────────────────────────
+async function loadIndex() {
+  const msg = document.getElementById('status-msg');
+  const bar = document.getElementById('loading-bar');
+  bar.style.display = 'block';
+  msg.textContent = 'კორპუსი იტვირთება… Corpus loading…';
+  try {
+    const r = await fetch('corpus_index.json');
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    INDEX = await r.json();
+    bar.style.display = 'none';
+    msg.textContent = '';
+    setStatus(`${INDEX.length.toLocaleString()} ტოკენი · tokens მზადაა · ready`);
+    // auto-search if URL has ?q=
+    const params = new URLSearchParams(location.search);
+    if (params.get('q')) {
+      document.getElementById('q').value = params.get('q');
+      doSearch();
+    }
+  } catch(e) {
+    bar.style.display = 'none';
+    msg.textContent = `ინდექსი ვერ ჩაიტვირთა: ${e.message}. Index not found: run build/build_corpus_index.py first.`;
+  }
+}
+
+// ── search ─────────────────────────────────────────────────────────────────
+function doSearch() {
+  if (!INDEX) return;
+  const q       = document.getElementById('q').value.trim().toLowerCase();
+  const fWho    = document.getElementById('f-who').value;
+  const fSpk    = document.getElementById('f-speaker').value;
+  const fPos    = document.getElementById('f-pos').value;
+  const fSc     = document.getElementById('f-screeve').value;
+  const fSer    = document.getElementById('f-series').value;
+
+  // update URL without reload
+  const url = new URL(location);
+  q ? url.searchParams.set('q', q) : url.searchParams.delete('q');
+  history.replaceState(null, '', url);
+
+  filtered = INDEX.filter(e => {
+    if (fWho    && e.who     !== fWho)    return false;
+    if (fSpk    && e.speaker !== fSpk)    return false;
+    if (fPos    && e.pos     !== fPos)    return false;
+    if (fSc     && e.screeve !== fSc)     return false;
+    if (fSer    && e.series  !== fSer)    return false;
+    if (!q) return true;
+    const hay = (e.form + ' ' + e.lemma + ' ' + e.gra + ' ' + e.gloss + ' ' + e.text).toLowerCase();
+    return hay.includes(q);
+  });
+
+  page = 0;
+  render();
+}
+
+// ── render ─────────────────────────────────────────────────────────────────
+function setStatus(msg) {
+  document.getElementById('status-msg').textContent = msg;
+}
+
+function highlight(text, q) {
+  if (!q) return escHtml(text);
+  const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return escHtml(text).replace(re, '<mark>$1</mark>');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function render() {
+  const q   = document.getElementById('q').value.trim().toLowerCase();
+  const res = document.getElementById('results');
+  const pag = document.getElementById('pagination');
+  const total = filtered.length;
+
+  if (total === 0 && q) {
+    setStatus('0 შედეგი · results');
+    res.innerHTML = `<div class="empty-state">
+      <div class="empty-state-title">შედეგი არ მოიძებნა</div>
+      <div class="empty-state-sub">No results for "${escHtml(q)}" with the current filters.</div>
+    </div>`;
+    pag.innerHTML = '';
+    return;
+  }
+
+  if (total === 0 && !q) {
+    setStatus('');
+    res.innerHTML = '';
+    pag.innerHTML = '';
+    return;
+  }
+
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const slice = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  setStatus(`<span class="status-count">${total.toLocaleString()}</span> შედეგი · results`);
+  document.getElementById('status-msg').innerHTML =
+    `<span class="status-count">${total.toLocaleString()}</span>&nbsp;შედეგი · results` +
+    (total > PAGE_SIZE ? ` (გვ. ${page+1}/${pages})` : '');
+
+  res.innerHTML = slice.map(e => {
+    const whoLabel = e.who === 'CHI' ? e.who_raw || 'CHI' : e.who_raw || e.who;
+    const whoClass = e.who === 'CHI' ? 'chi' : '';
+    const kwicText = e.text ? highlight(e.text, q) : '–';
+    const graLine  = e.gra && e.gra !== e.pos
+      ? `<div class="result-gra">${escHtml(e.gra)}</div>` : '';
+    const screeveLine = e.screeve
+      ? `<span class="result-screeve">${escHtml(e.screeve)}${e.series ? ' · ' + escHtml(e.series) : ''}</span>` : '';
+    const transLine = e.translation_en
+      ? `<div class="result-trans">${escHtml(e.translation_en)}</div>` : '';
+
+    return `<div class="result-row">
+      <div class="result-meta">
+        <div class="result-session">
+          <a href="${escHtml(e.url)}" title="გადასვლა ტრანსკრიპტში">${escHtml(e.session)} #${escHtml(e.uID)}</a>
+        </div>
+        <div class="result-who ${whoClass}">${escHtml(whoLabel)}</div>
+        <div class="result-age">${escHtml(e.age || '')}</div>
+        ${screeveLine}
+      </div>
+      <div class="result-body">
+        <div class="kwic">${kwicText}</div>
+        <div class="result-lemma">
+          <span class="pos-chip">${escHtml(e.pos || '')}</span>
+          ${escHtml(e.lemma || '')}
+        </div>
+        ${graLine}
+        ${transLine}
+      </div>
+    </div>`;
+  }).join('');
+
+  // pagination
+  if (pages <= 1) { pag.innerHTML = ''; return; }
+  const btns = [];
+  const lo = Math.max(0, page - 3), hi = Math.min(pages - 1, page + 3);
+  if (lo > 0) btns.push(`<button class="page-btn" onclick="goPage(0)">1</button>${lo > 1 ? '<span style="align-self:center;color:var(--ink-5)">…</span>' : ''}`);
+  for (let p = lo; p <= hi; p++) {
+    btns.push(`<button class="page-btn${p===page?' active':''}" onclick="goPage(${p})">${p+1}</button>`);
+  }
+  if (hi < pages - 1) btns.push(`${hi < pages - 2 ? '<span style="align-self:center;color:var(--ink-5)">…</span>' : ''}<button class="page-btn" onclick="goPage(${pages-1})">${pages}</button>`);
+  pag.innerHTML = btns.join('');
+}
+
+function goPage(p) {
+  page = p;
+  render();
+  window.scrollTo({top: document.getElementById('status-bar').offsetTop - 70, behavior: 'smooth'});
+}
+
+// ── events ─────────────────────────────────────────────────────────────────
+document.getElementById('q').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+loadIndex();
+</script>
+</body>
+</html>
