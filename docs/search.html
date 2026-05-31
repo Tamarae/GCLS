@@ -222,6 +222,12 @@
 .result-trans::before { content: '\2018'; }
 .result-trans::after  { content: '\2019'; }
 
+.match-block {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-2);
+}
+
 .empty-state {
   padding: 56px 0;
   text-align: center;
@@ -401,7 +407,8 @@
 <script>
 const PAGE_SIZE = 50;
 let INDEX = null;         // full token array after load
-let filtered = [];        // current result set
+let filtered = [];        // matched tokens
+let filteredUtts = [];    // deduplicated utterance-level results
 let page = 0;
 
 // ── load ──────────────────────────────────────────────────────────────────
@@ -451,9 +458,23 @@ function doSearch() {
     if (fSc     && e.screeve !== fSc)     return false;
     if (fSer    && e.series  !== fSer)    return false;
     if (!q) return true;
-    const hay = (e.form + ' ' + e.lemma + ' ' + e.gra + ' ' + e.gloss + ' ' + e.text).toLowerCase();
+    // match form/lemma/gra/gloss only — NOT the full utterance text
+    // (matching text caused every token in the utterance to appear as a hit)
+    const hay = (e.form + ' ' + e.lemma + ' ' + e.gra + ' ' + e.gloss).toLowerCase();
     return hay.includes(q);
   });
+
+  // deduplicate to utterance level:
+  // group matched tokens by session+uID, keeping a list of matched tokens per utterance
+  const uttMap = new Map();
+  for (const e of filtered) {
+    const key = e.session + '|' + e.uID;
+    if (!uttMap.has(key)) {
+      uttMap.set(key, { utt: e, matches: [] });
+    }
+    uttMap.get(key).matches.push(e);
+  }
+  filteredUtts = [...uttMap.values()];  // array of {utt, matches[]}
 
   page = 0;
   render();
@@ -461,7 +482,7 @@ function doSearch() {
 
 // ── render ─────────────────────────────────────────────────────────────────
 function setStatus(msg) {
-  document.getElementById('status-msg').textContent = msg;
+  document.getElementById('status-msg').innerHTML = msg;
 }
 
 function highlight(text, q) {
@@ -471,14 +492,14 @@ function highlight(text, q) {
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function render() {
   const q   = document.getElementById('q').value.trim().toLowerCase();
   const res = document.getElementById('results');
   const pag = document.getElementById('pagination');
-  const total = filtered.length;
+  const total = filteredUtts.length;
 
   if (total === 0 && q) {
     setStatus('0 შედეგი · results');
@@ -498,20 +519,47 @@ function render() {
   }
 
   const pages = Math.ceil(total / PAGE_SIZE);
-  const slice = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-  setStatus(`<span class="status-count">${total.toLocaleString()}</span> შედეგი · results`);
-  document.getElementById('status-msg').innerHTML =
-    `<span class="status-count">${total.toLocaleString()}</span>&nbsp;შედეგი · results` +
-    (total > PAGE_SIZE ? ` (გვ. ${page+1}/${pages})` : '');
+  const slice = filteredUtts.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  setStatus(
+    `<span class="status-count">${total.toLocaleString()}</span>&nbsp;გამონათქვამი · utterances` +
+    (total > PAGE_SIZE ? ` (გვ. ${page+1}/${pages})` : '')
+  );
 
-  res.innerHTML = slice.map(e => {
+  res.innerHTML = slice.map(({utt: e, matches}) => {
     const whoLabel = e.who === 'CHI' ? e.who_raw || 'CHI' : e.who_raw || e.who;
     const whoClass = e.who === 'CHI' ? 'chi' : '';
-    const kwicText = e.text ? highlight(e.text, q) : '–';
-    const graLine  = e.gra && e.gra !== e.pos
-      ? `<div class="result-gra">${escHtml(e.gra)}</div>` : '';
-    const screeveLine = e.screeve
-      ? `<span class="result-screeve">${escHtml(e.screeve)}${e.series ? ' · ' + escHtml(e.series) : ''}</span>` : '';
+
+    // highlight matched forms in the utterance text
+    const matchedForms = [...new Set(matches.map(m => m.form))];
+    let kwicText = escHtml(e.text || '–');
+    for (const form of matchedForms) {
+      const re = new RegExp('(' + form.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'g');
+      kwicText = kwicText.replace(re, '<mark>$1</mark>');
+    }
+    // also highlight the query string if it differs from form (e.g. lemma search)
+    if (q) {
+      const re2 = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      kwicText = kwicText.replace(re2, '<mark>$1</mark>');
+    }
+
+    // one annotation block per unique matched token (deduplicated by form+gra)
+    const seen = new Set();
+    const matchBlocks = matches
+      .filter(m => { const k = m.form+'|'+m.gra; if (seen.has(k)) return false; seen.add(k); return true; })
+      .map(m => {
+        const graLine  = m.gra && m.gra !== m.pos
+          ? `<div class="result-gra">${escHtml(m.gra)}</div>` : '';
+        const screeveLine = m.screeve
+          ? `<div class="result-screeve">${escHtml(m.screeve)}${m.series ? ' · ' + escHtml(m.series) : ''}</div>` : '';
+        return `<div class="match-block">
+          <div class="result-lemma">
+            <span class="pos-chip">${escHtml(m.pos || '')}</span>
+            <strong>${escHtml(m.form)}</strong> — ${escHtml(m.lemma || '')}
+          </div>
+          ${graLine}${screeveLine}
+        </div>`;
+      }).join('');
+
     const transLine = e.translation_en
       ? `<div class="result-trans">${escHtml(e.translation_en)}</div>` : '';
 
@@ -522,15 +570,10 @@ function render() {
         </div>
         <div class="result-who ${whoClass}">${escHtml(whoLabel)}</div>
         <div class="result-age">${escHtml(e.age || '')}</div>
-        ${screeveLine}
       </div>
       <div class="result-body">
         <div class="kwic">${kwicText}</div>
-        <div class="result-lemma">
-          <span class="pos-chip">${escHtml(e.pos || '')}</span>
-          ${escHtml(e.lemma || '')}
-        </div>
-        ${graLine}
+        ${matchBlocks}
         ${transLine}
       </div>
     </div>`;
@@ -541,8 +584,8 @@ function render() {
   const btns = [];
   const lo = Math.max(0, page - 3), hi = Math.min(pages - 1, page + 3);
   if (lo > 0) btns.push(`<button class="page-btn" onclick="goPage(0)">1</button>${lo > 1 ? '<span style="align-self:center;color:var(--ink-5)">…</span>' : ''}`);
-  for (let p = lo; p <= hi; p++) {
-    btns.push(`<button class="page-btn${p===page?' active':''}" onclick="goPage(${p})">${p+1}</button>`);
+  for (let p2 = lo; p2 <= hi; p2++) {
+    btns.push(`<button class="page-btn${p2===page?' active':''}" onclick="goPage(${p2})">${p2+1}</button>`);
   }
   if (hi < pages - 1) btns.push(`${hi < pages - 2 ? '<span style="align-self:center;color:var(--ink-5)">…</span>' : ''}<button class="page-btn" onclick="goPage(${pages-1})">${pages}</button>`);
   pag.innerHTML = btns.join('');
