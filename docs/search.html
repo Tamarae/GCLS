@@ -423,7 +423,7 @@ async function loadIndex() {
     INDEX = await r.json();
     bar.style.display = 'none';
     msg.textContent = '';
-    setStatus(`${INDEX.length.toLocaleString()} ტოკენი · tokens მზადაა · ready`);
+    setStatus(`${INDEX.length.toLocaleString()} ტოკენი`);
     // auto-search if URL has ?q=
     const params = new URLSearchParams(location.search);
     if (params.get('q')) {
