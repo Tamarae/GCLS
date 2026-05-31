@@ -3,11 +3,207 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>GCLC · Georgian Child Language Sketch</title>
+<title>GCLS · Georgian Child Language Sketch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600&family=Noto+Serif+Georgian:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="assets/site.css"/>
+
+<!-- ——— index-specific overrides + additions (matrix + citation) ——— -->
+<style>
+  :root {
+    --accent-teal:        #1a7a6e;
+    --accent-faint:       rgba(26, 122, 110, 0.055);
+    --accent-faint-hover: rgba(26, 122, 110, 0.11);
+  }
+
+  /* —————————————— Sessions matrix —————————————— */
+  .section table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 4px;
+  }
+  .section table.matrix thead th {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3, #5e5e5e);
+    padding: 22px 12px 22px;
+    border-bottom: 1px solid var(--ink-3, #5e5e5e);
+    text-align: center;
+    background: var(--paper, #fff);
+  }
+  .section table.matrix thead th:first-child {
+    text-align: left;
+    padding-left: 0;
+    width: 22%;
+    border-bottom: none;
+  }
+  .section table.matrix thead th:not(:first-child) { width: 13%; }
+  .section table.matrix tbody td {
+    padding: 18px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--line, #e6e6e6);
+    text-align: center;
+  }
+  .section table.matrix tbody tr:last-child td {
+    border-bottom: 1px solid var(--ink-3, #5e5e5e);
+  }
+  .section table.matrix td.m-speaker {
+    text-align: left;
+    padding-left: 0;
+    background: var(--paper, #fff);
+  }
+  .section table.matrix .speaker-ka {
+    font-family: var(--font-serif, 'Noto Serif Georgian', serif);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink, #0a0a0a);
+    display: block;
+    line-height: 1.2;
+  }
+  .section table.matrix .speaker-en {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    color: var(--ink-4, #909090);
+    letter-spacing: 0.12em;
+    margin-top: 4px;
+    display: block;
+  }
+  .section table.matrix td.m-cell {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 11.5px;
+  }
+  .section table.matrix td.m-cell.filled {
+    background: var(--accent-faint);
+    transition: background .12s;
+  }
+  .section table.matrix td.m-cell.filled:hover {
+    background: var(--accent-faint-hover);
+  }
+  .section table.matrix td.m-cell.filled a {
+    color: var(--ink, #0a0a0a);
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+    padding: 1px 2px;
+    transition: color .12s, border-color .12s;
+    display: inline-block;
+    letter-spacing: 0.04em;
+  }
+  .section table.matrix td.m-cell.filled a:hover {
+    color: var(--accent-teal);
+    border-bottom-color: var(--accent-teal);
+  }
+  .section table.matrix td.m-cell.filled a + a { margin-top: 6px; }
+  .section table.matrix td.m-cell.empty {
+    color: var(--ink-5, #c4c4c4);
+    font-size: 18px;
+    line-height: 1;
+    user-select: none;
+  }
+  .matrix-legend {
+    margin-top: 16px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    color: var(--ink-4, #909090);
+    letter-spacing: 0.06em;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .matrix-legend .lg-item { display: flex; align-items: center; gap: 8px; }
+  .lg-swatch {
+    width: 14px; height: 14px;
+    background: var(--accent-faint);
+    display: inline-block;
+  }
+  .lg-dot {
+    color: var(--ink-5, #c4c4c4);
+    font-size: 14px;
+    width: 14px;
+    text-align: center;
+    display: inline-block;
+  }
+
+  /* —————————————— Citation —————————————— */
+  .cite-wrap { max-width: 820px; }
+  .cite-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .cite-copy-btn {
+    background: var(--paper, #fff);
+    border: 1px solid var(--line-2, #d4d4d4);
+    cursor: pointer;
+    padding: 7px 14px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    color: var(--ink-2, #2a2a2a);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color .12s, border-color .12s, background .12s;
+    display: inline-flex; align-items: center; gap: 8px;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .cite-copy-btn .copy-glyph {
+    font-family: var(--font-sans, sans-serif);
+    font-size: 12px;
+    line-height: 1;
+    color: var(--ink-3, #5e5e5e);
+    transition: color .12s;
+  }
+  .cite-copy-btn:hover {
+    color: var(--paper, #fff);
+    background: var(--ink, #0a0a0a);
+    border-color: var(--ink, #0a0a0a);
+  }
+  .cite-copy-btn:hover .copy-glyph { color: var(--paper, #fff); }
+  .cite-copy-btn.copied,
+  .cite-copy-btn.copied:hover {
+    color: var(--accent-teal);
+    border-color: var(--accent-teal);
+    background: var(--paper, #fff);
+  }
+  .cite-copy-btn.copied .copy-glyph { color: var(--accent-teal); }
+
+  .cite-block {
+    background: var(--paper-2, #f8f8f6);
+    border-left: 2px solid var(--ink, #0a0a0a);
+    padding: 22px 28px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 12.5px;
+    color: var(--ink-2, #2a2a2a);
+    line-height: 1.75;
+  }
+  .cite-block .cite-author { color: var(--ink, #0a0a0a); font-weight: 500; }
+  .cite-block .cite-year   { color: var(--ink-3, #5e5e5e); }
+  .cite-block .cite-title  { font-style: italic; color: var(--ink, #0a0a0a); }
+  .cite-block .cite-url {
+    color: var(--ink-3, #5e5e5e);
+    border-bottom: 1px dotted var(--ink-5, #c4c4c4);
+    text-decoration: none;
+    transition: color .12s, border-color .12s;
+  }
+  .cite-block .cite-url:hover {
+    color: var(--accent-teal);
+    border-bottom-color: var(--accent-teal);
+  }
+  .cite-note {
+    font-size: 12px;
+    color: var(--ink-4, #909090);
+    font-style: italic;
+    font-family: var(--font-serif, 'Noto Serif Georgian', serif);
+    margin-top: 16px;
+    max-width: 660px;
+    line-height: 1.55;
+  }
+</style>
 </head>
 <body>
 
@@ -76,41 +272,66 @@
       </thead>
       <tbody>
         <tr>
-          <td>ალექსი / ALE</td>
-          <td><a href="ALE10619.html">ALE10619</a></td>
-          <td><a href="ALE20015.html">ALE20015</a></td>
-          <td><a href="ALE20616.html">ALE20616</a></td>
-          <td>—</td><td>—</td><td>—</td>
+          <td class="m-speaker">
+            <span class="speaker-ka">ალექსი</span>
+            <span class="speaker-en">ALE</span>
+          </td>
+          <td class="m-cell filled"><a href="ALE10619.html">ALE10619</a></td>
+          <td class="m-cell filled"><a href="ALE20015.html">ALE20015</a></td>
+          <td class="m-cell filled"><a href="ALE20616.html">ALE20616</a></td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
         </tr>
         <tr>
-          <td>გაბრიელი / GAB</td>
-          <td>
-            <a href="GAB10600.html">GAB10600</a><br/>
+          <td class="m-speaker">
+            <span class="speaker-ka">გაბრიელა</span>
+            <span class="speaker-en">GAB</span>
+          </td>
+          <td class="m-cell filled">
+            <a href="GAB10600.html">GAB10600</a>
             <a href="GAB10619.html">GAB10619</a>
           </td>
-          <td><a href="GAB20026a.html">GAB20026a</a></td>
-          <td><a href="GAB20623.html">GAB20623</a></td>
-          <td>—</td><td>—</td><td>—</td>
+          <td class="m-cell filled"><a href="GAB20026a.html">GAB20026a</a></td>
+          <td class="m-cell filled"><a href="GAB20623.html">GAB20623</a></td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
         </tr>
         <tr>
-          <td>ანა / ANA</td>
-          <td>—</td><td>—</td><td>—</td>
-          <td><a href="ANA30014a.html">ANA30014a</a></td>
-          <td><a href="ANA30614.html">ANA30614</a></td>
-          <td><a href="ANA40027a.html">ANA40027a</a></td>
+          <td class="m-speaker">
+            <span class="speaker-ka">ანა</span>
+            <span class="speaker-en">ANA</span>
+          </td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell filled"><a href="ANA30014a.html">ANA30014a</a></td>
+          <td class="m-cell filled"><a href="ANA30614.html">ANA30614</a></td>
+          <td class="m-cell filled"><a href="ANA40027a.html">ANA40027a</a></td>
         </tr>
         <tr>
-          <td>მათე / MAT</td>
-          <td>—</td><td>—</td><td>—</td>
-          <td><a href="MAT30023a.html">MAT30023a</a></td>
-          <td><a href="MAT30620d.html">MAT30620d</a></td>
-          <td>
-            <a href="MAT40121.html">MAT40121</a><br/>
+          <td class="m-speaker">
+            <span class="speaker-ka">მათე</span>
+            <span class="speaker-en">MAT</span>
+          </td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell empty">·</td>
+          <td class="m-cell filled"><a href="MAT30023a.html">MAT30023a</a></td>
+          <td class="m-cell filled"><a href="MAT30620d.html">MAT30620d</a></td>
+          <td class="m-cell filled">
+            <a href="MAT40121.html">MAT40121</a>
             <a href="MAT40123.html">MAT40123</a>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <div class="matrix-legend">
+      <div class="lg-item"><span class="lg-swatch"></span> ტრანსკრიპტი</div>
+      <div class="lg-item"><span class="lg-dot">·</span> ჩანაწერი არ არის</div>
+    </div>
   </section>
 
   <section class="section">
@@ -153,11 +374,27 @@
     </div>
   </section>
 
+  <section class="section">
+    <div class="section-title">ციტირება / How to cite</div>
+
+    <div class="cite-wrap">
+      <div class="cite-toolbar">
+        <button class="cite-copy-btn" id="citeCopyBtn" aria-label="Copy citation to clipboard">
+          <span class="copy-glyph">⎘</span><span class="copy-label">კოპირება | Copy</span>
+        </button>
+      </div>
+      <div class="cite-block" id="citeText"><span class="cite-author">Tsintsadze, N., Tchintcharauli, T., Kalkhitashvili, T., Damenia, T., Doborjginidze, N., Uziel, S., &amp; Allen, S.</span> <span class="cite-year">(2026)</span>. <span class="cite-title">Georgian Child Language Sketch</span> [Data set]. Ilia State University, Tbilisi. <a class="cite-url" href="https://sketch.iliauni.edu.ge">sketch.iliauni.edu.ge</a></div>
+      <p class="cite-note">
+        Pre-release citation. Will be updated with a DOI on first stable release.
+      </p>
+    </div>
+  </section>
+
 </div>
 
 <footer class="site-footer">
   <div class="site-footer-meta">
-    <span>GCLC · Ilia State University · Tbilisi</span>
+    <span>GCLS · Ilia State University · Tbilisi</span>
     <span class="sep">·</span>
     <span>CHAT / CHILDES compatible</span>
   </div>
@@ -170,6 +407,52 @@
     </a>
   </div>
 </footer>
+
+<script>
+(function() {
+  var btn = document.getElementById('citeCopyBtn');
+  var src = document.getElementById('citeText');
+  if (!btn || !src) return;
+
+  btn.addEventListener('click', function() {
+    var text = src.innerText.trim().replace(/\s+/g, ' ');
+
+    var done = function() {
+      btn.classList.add('copied');
+      var label = btn.querySelector('.copy-label');
+      var glyph = btn.querySelector('.copy-glyph');
+      var origLabel = label.textContent;
+      var origGlyph = glyph.textContent;
+      label.textContent = 'Copied';
+      glyph.textContent = '✓';
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        label.textContent = origLabel;
+        glyph.textContent = origGlyph;
+      }, 2000);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function() {
+        fallbackCopy(text, done);
+      });
+    } else {
+      fallbackCopy(text, done);
+    }
+  });
+
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+})();
+</script>
 
 </body>
 </html>
